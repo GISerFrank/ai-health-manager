@@ -1,10 +1,686 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO优化 -->
+    <title>智医伴侣 - AI个人病情管理专家 | 症状记录 康复跟踪</title>
+    <meta name="description" content="智医伴侣是专业的AI健康管理平台，提供症状记录、AI分析、康复跟踪、用药管理等服务。支持感冒、偏头痛、胃肠炎等常见疾病的智能管理。">
+    <meta name="keywords" content="AI健康管理,症状记录,康复跟踪,智能医疗,病情分析,健康助手,医疗AI">
+    <meta name="author" content="智医伴侣团队">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="智医伴侣 - AI个人病情管理专家">
+    <meta property="og:description" content="专业的AI健康管理平台，智能症状分析，个性化康复方案">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://your-domain.com">
+    <meta property="og:image" content="https://your-domain.com/assets/og-image.jpg">
+
+    <!-- PWA支持 -->
+    <meta name="theme-color" content="#2c5aa0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="智医伴侣">
+    <link rel="manifest" href="manifest.json">
+
+    <!-- 图标 -->
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+    <!-- 预加载关键资源 -->
+    <link rel="preload" href="assets/css/style.css" as="style">
+    <link rel="preload" href="assets/js/app.js" as="script">
+
+    <!-- 样式表 -->
+    <link rel="stylesheet" href="assets/css/style.css">
+
+    <!-- 百度统计 -->
+    <script>
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?your_baidu_analytics_id";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
 </head>
 <body>
-$END$
+<!-- 加载动画 -->
+<div id="loading-screen" class="loading-screen">
+    <div class="loading-content">
+        <div class="loading-logo">🏥</div>
+        <h2>智医伴侣</h2>
+        <div class="loading-spinner"></div>
+        <p>AI健康管理专家正在启动...</p>
+    </div>
+</div>
+
+<div class="app-container" id="app" style="display: none;">
+    <!-- 顶部导航 -->
+    <nav class="top-nav">
+        <div class="nav-left">
+            <h1>🏥 智医伴侣</h1>
+            <span class="version">医疗级专业版 v1.0</span>
+        </div>
+        <div class="nav-right">
+            <button class="emergency-btn" onclick="emergencyCall()">🚨 紧急呼叫</button>
+            <div class="user-info">
+                <div class="user-avatar">👤</div>
+                <span id="userName">用户</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 角色切换 -->
+    <div class="role-switch">
+        <button class="role-tab active" onclick="switchRole('patient')">🧑‍💼 患者视图</button>
+        <button class="role-tab doctor" onclick="switchRole('doctor')">👨‍⚕️ 医生工作台</button>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="main-content" id="mainContent">
+        <!-- 患者端视图 -->
+        <div class="patient-view" id="patientView">
+            <div class="sidebar">
+                <!-- 病症选择器 -->
+                <div class="medical-card">
+                    <h3>🏥 选择病症类型</h3>
+                    <div class="disease-selector-grid">
+                        <div class="disease-option active" data-disease="cold" onclick="selectDisease('cold')">
+                            <div class="disease-icon">🤧</div>
+                            <div class="disease-label">感冒/流感</div>
+                        </div>
+                        <div class="disease-option" data-disease="gastro" onclick="selectDisease('gastro')">
+                            <div class="disease-icon">🤢</div>
+                            <div class="disease-label">胃肠炎</div>
+                        </div>
+                        <div class="disease-option" data-disease="migraine" onclick="selectDisease('migraine')">
+                            <div class="disease-icon">🧠</div>
+                            <div class="disease-label">偏头痛</div>
+                        </div>
+                        <div class="disease-option" data-disease="allergy" onclick="selectDisease('allergy')">
+                            <div class="disease-icon">🌸</div>
+                            <div class="disease-label">过敏性鼻炎</div>
+                        </div>
+                        <div class="disease-option" data-disease="sprain" onclick="selectDisease('sprain')">
+                            <div class="disease-icon">🦵</div>
+                            <div class="disease-label">肌肉扭伤</div>
+                        </div>
+                        <div class="disease-option" data-disease="insomnia" onclick="selectDisease('insomnia')">
+                            <div class="disease-icon">😴</div>
+                            <div class="disease-label">失眠症</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="medical-card">
+                    <h3>⚕️ 当前病情状态</h3>
+                    <div class="disease-summary" id="diseaseSummary">
+                        <div class="current-disease">
+                            <strong>当前疾病：</strong><span id="currentDiseaseName">感冒/流感</span>
+                        </div>
+                        <div class="disease-progress">
+                            <strong>病程：</strong><span id="diseaseProgress">第5天</span>
+                        </div>
+                        <div class="last-record">
+                            <strong>最后记录：</strong><span id="lastRecord">2小时前</span>
+                        </div>
+                    </div>
+
+                    <div class="vital-signs">
+                        <div class="vital-item vital-abnormal">
+                            <div class="vital-value">38.2°C</div>
+                            <div class="vital-label">体温</div>
+                        </div>
+                        <div class="vital-item">
+                            <div class="vital-value">120/80</div>
+                            <div class="vital-label">血压</div>
+                        </div>
+                        <div class="vital-item">
+                            <div class="vital-value">88</div>
+                            <div class="vital-label">心率</div>
+                        </div>
+                        <div class="vital-item">
+                            <div class="vital-value">98%</div>
+                            <div class="vital-label">血氧</div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" style="width: 100%; margin-top: 15px;" onclick="showSymptomForm()">
+                        📝 记录症状
+                    </button>
+                </div>
+
+                <div class="medical-card">
+                    <h3>💊 当前用药方案</h3>
+                    <div class="medication-list" id="medicationList">
+                        <!-- 动态生成用药列表 -->
+                    </div>
+                    <button class="btn btn-success" style="width: 100%;" onclick="recordMedication()">
+                        ✅ 记录服药情况
+                    </button>
+                </div>
+            </div>
+
+            <div class="content-area">
+                <!-- 症状记录表单区域 -->
+                <div class="symptom-recording-area" id="symptomArea">
+                    <!-- 感冒/流感记录表单 -->
+                    <div class="symptom-form-card" id="cold-form">
+                        <div class="form-header">
+                            <h3>🤧 感冒/流感症状记录</h3>
+                            <div class="record-time">📅 今日第<span id="recordCount">2</span>次记录</div>
+                        </div>
+
+                        <div class="symptom-assessment-grid">
+                            <div class="assessment-item">
+                                <label>🌡️ 体温评估</label>
+                                <div class="temperature-input-group">
+                                    <input type="number" step="0.1" placeholder="36.5" class="temp-input" />
+                                    <select class="time-select">
+                                        <option>晨起</option>
+                                        <option>中午</option>
+                                        <option>傍晚</option>
+                                        <option>睡前</option>
+                                    </select>
+                                </div>
+                                <div class="fever-scale">
+                                    <div class="fever-level fever-normal selected" data-level="1">
+                                        <div class="level-indicator"></div>
+                                        <span>正常</span>
+                                        <small>&lt;37.3°C</small>
+                                    </div>
+                                    <div class="fever-level fever-low" data-level="2">
+                                        <div class="level-indicator"></div>
+                                        <span>低热</span>
+                                        <small>37.3-38°C</small>
+                                    </div>
+                                    <div class="fever-level fever-moderate" data-level="3">
+                                        <div class="level-indicator"></div>
+                                        <span>中热</span>
+                                        <small>38-39°C</small>
+                                    </div>
+                                    <div class="fever-level fever-high" data-level="4">
+                                        <div class="level-indicator"></div>
+                                        <span>高热</span>
+                                        <small>39-40°C</small>
+                                    </div>
+                                    <div class="fever-level fever-extreme" data-level="5">
+                                        <div class="level-indicator"></div>
+                                        <span>超高热</span>
+                                        <small>&gt;40°C</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="assessment-item">
+                                <label>😷 咳嗽评估</label>
+                                <div class="symptom-scale">
+                                    <div class="scale-option" data-level="1">无咳嗽</div>
+                                    <div class="scale-option selected" data-level="2">偶尔干咳</div>
+                                    <div class="scale-option" data-level="3">频繁干咳</div>
+                                    <div class="scale-option" data-level="4">有痰咳嗽</div>
+                                    <div class="scale-option" data-level="5">剧烈咳嗽</div>
+                                </div>
+                            </div>
+
+                            <div class="assessment-item">
+                                <label>👃 鼻部症状</label>
+                                <div class="multi-symptom-grid">
+                                    <div class="sub-symptom">
+                                        <span>鼻塞程度</span>
+                                        <div class="mini-scale">
+                                            <div class="mini-option" data-level="1">无</div>
+                                            <div class="mini-option" data-level="2">轻</div>
+                                            <div class="mini-option selected" data-level="3">中</div>
+                                            <div class="mini-option" data-level="4">重</div>
+                                            <div class="mini-option" data-level="5">极重</div>
+                                        </div>
+                                    </div>
+                                    <div class="sub-symptom">
+                                        <span>流涕情况</span>
+                                        <div class="mini-scale">
+                                            <div class="mini-option" data-level="1">无</div>
+                                            <div class="mini-option selected" data-level="2">少量</div>
+                                            <div class="mini-option" data-level="3">中量</div>
+                                            <div class="mini-option" data-level="4">大量</div>
+                                            <div class="mini-option" data-level="5">持续</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="assessment-item">
+                                <label>🗣️ 咽喉症状</label>
+                                <div class="symptom-scale">
+                                    <div class="scale-option" data-level="1">无不适</div>
+                                    <div class="scale-option selected" data-level="2">轻微干燥</div>
+                                    <div class="scale-option" data-level="3">吞咽时疼痛</div>
+                                    <div class="scale-option" data-level="4">持续疼痛</div>
+                                    <div class="scale-option" data-level="5">剧烈疼痛</div>
+                                </div>
+                            </div>
+
+                            <div class="assessment-item">
+                                <label>😴 全身状态</label>
+                                <div class="general-symptoms">
+                                    <div class="energy-scale">
+                                        <span>精力状态：</span>
+                                        <div class="energy-options">
+                                            <div class="energy-option" data-level="5">充沛</div>
+                                            <div class="energy-option" data-level="4">良好</div>
+                                            <div class="energy-option selected" data-level="3">一般</div>
+                                            <div class="energy-option" data-level="2">疲倦</div>
+                                            <div class="energy-option" data-level="1">极度疲倦</div>
+                                        </div>
+                                    </div>
+                                    <div class="general-checkboxes">
+                                        <label><input type="checkbox" checked /> 头痛</label>
+                                        <label><input type="checkbox" /> 肌肉酸痛</label>
+                                        <label><input type="checkbox" /> 食欲减退</label>
+                                        <label><input type="checkbox" /> 睡眠不佳</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="additional-notes">
+                            <label>📝 其他症状或备注</label>
+                            <textarea placeholder="如：特殊不适、环境因素、接触史等..."></textarea>
+                        </div>
+
+                        <div class="form-actions">
+                            <button class="btn btn-primary" onclick="analyzeSymptoms('cold')">
+                                🤖 AI智能分析
+                            </button>
+                            <button class="btn btn-success" onclick="saveSymptomRecord()">
+                                💾 保存记录
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 偏头痛记录表单 -->
+                    <div class="symptom-form-card" id="migraine-form" style="display: none;">
+                        <div class="form-header">
+                            <h3>🧠 偏头痛发作记录</h3>
+                            <div class="attack-info">
+                                <span>发作开始：</span>
+                                <input type="datetime-local" />
+                            </div>
+                        </div>
+
+                        <div class="migraine-assessment">
+                            <div class="pain-intensity-section">
+                                <label>💥 疼痛强度评估 (VAS量表)</label>
+                                <div class="vas-scale">
+                                    <div class="vas-slider-container">
+                                        <input type="range" min="0" max="10" value="6" class="vas-slider" id="painIntensity" />
+                                        <div class="vas-value">6/10</div>
+                                    </div>
+                                    <div class="vas-labels">
+                                        <span>无痛</span>
+                                        <span>轻度</span>
+                                        <span>中度</span>
+                                        <span>重度</span>
+                                        <span>剧痛</span>
+                                    </div>
+                                    <div class="pain-faces">
+                                        <span>😊</span><span>😐</span><span>😟</span><span>😣</span><span>😭</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pain-location-section">
+                                <label>📍 疼痛部位 (可多选)</label>
+                                <div class="head-regions">
+                                    <label class="region-option">
+                                        <input type="checkbox" />
+                                        <span class="region left-temporal">左颞部</span>
+                                    </label>
+                                    <label class="region-option">
+                                        <input type="checkbox" checked />
+                                        <span class="region right-temporal">右颞部</span>
+                                    </label>
+                                    <label class="region-option">
+                                        <input type="checkbox" />
+                                        <span class="region frontal">前额部</span>
+                                    </label>
+                                    <label class="region-option">
+                                        <input type="checkbox" />
+                                        <span class="region occipital">枕部</span>
+                                    </label>
+                                    <label class="region-option">
+                                        <input type="checkbox" />
+                                        <span class="region whole-head">全头</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="pain-character-section">
+                                <label>⚡ 疼痛性质</label>
+                                <div class="character-options">
+                                    <label class="character-option">
+                                        <input type="radio" name="pain-character" checked />
+                                        <span>搏动性</span>
+                                        <small>像心跳一样一跳一跳</small>
+                                    </label>
+                                    <label class="character-option">
+                                        <input type="radio" name="pain-character" />
+                                        <span>胀痛</span>
+                                        <small>头部胀满感</small>
+                                    </label>
+                                    <label class="character-option">
+                                        <input type="radio" name="pain-character" />
+                                        <span>针刺样</span>
+                                        <small>像针扎一样</small>
+                                    </label>
+                                    <label class="character-option">
+                                        <input type="radio" name="pain-character" />
+                                        <span>压迫性</span>
+                                        <small>像被重物压着</small>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="associated-symptoms-section">
+                                <label>🤢 伴随症状</label>
+                                <div class="associated-grid">
+                                    <label class="assoc-option nausea">
+                                        <input type="checkbox" checked />
+                                        <span>恶心</span>
+                                    </label>
+                                    <label class="assoc-option vomiting">
+                                        <input type="checkbox" />
+                                        <span>呕吐</span>
+                                    </label>
+                                    <label class="assoc-option photophobia">
+                                        <input type="checkbox" checked />
+                                        <span>畏光</span>
+                                    </label>
+                                    <label class="assoc-option phonophobia">
+                                        <input type="checkbox" />
+                                        <span>畏声</span>
+                                    </label>
+                                    <label class="assoc-option visual-aura">
+                                        <input type="checkbox" />
+                                        <span>视觉先兆</span>
+                                    </label>
+                                    <label class="assoc-option speech-problem">
+                                        <input type="checkbox" />
+                                        <span>言语障碍</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="triggers-section">
+                                <label>🎯 可能诱发因素</label>
+                                <div class="triggers-grid">
+                                    <label class="trigger-option">
+                                        <input type="checkbox" checked />
+                                        <span>睡眠不足</span>
+                                    </label>
+                                    <label class="trigger-option">
+                                        <input type="checkbox" checked />
+                                        <span>工作压力</span>
+                                    </label>
+                                    <label class="trigger-option">
+                                        <input type="checkbox" />
+                                        <span>生理期</span>
+                                    </label>
+                                    <label class="trigger-option">
+                                        <input type="checkbox" />
+                                        <span>天气变化</span>
+                                    </label>
+                                    <label class="trigger-option">
+                                        <input type="checkbox" />
+                                        <span>特定食物</span>
+                                    </label>
+                                    <label class="trigger-option">
+                                        <input type="checkbox" />
+                                        <span>强光刺激</span>
+                                    </label>
+                                    <label class="trigger-option">
+                                        <input type="checkbox" />
+                                        <span>噪音环境</span>
+                                    </label>
+                                    <label class="trigger-option">
+                                        <input type="checkbox" />
+                                        <span>情绪波动</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button class="btn btn-primary" onclick="analyzeSymptoms('migraine')">
+                                🤖 AI智能分析
+                            </button>
+                            <button class="btn btn-success" onclick="saveSymptomRecord()">
+                                💾 保存记录
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 其他疾病表单占位 -->
+                    <div class="symptom-form-card" id="gastro-form" style="display: none;">
+                        <div class="form-header">
+                            <h3>🤢 急性胃肠炎症状记录</h3>
+                        </div>
+                        <div class="coming-soon">
+                            <p>🚧 胃肠炎专用表单正在开发中...</p>
+                            <p>敬请期待更多专业功能</p>
+                            <button class="btn btn-primary" onclick="selectDisease('cold')">
+                                使用感冒表单临时记录
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="symptom-form-card" id="allergy-form" style="display: none;">
+                        <div class="coming-soon">
+                            <h3>🌸 过敏性鼻炎专用表单</h3>
+                            <p>🚧 功能开发中，敬请期待...</p>
+                        </div>
+                    </div>
+
+                    <div class="symptom-form-card" id="sprain-form" style="display: none;">
+                        <div class="coming-soon">
+                            <h3>🦵 肌肉扭伤专用表单</h3>
+                            <p>🚧 功能开发中，敬请期待...</p>
+                        </div>
+                    </div>
+
+                    <div class="symptom-form-card" id="insomnia-form" style="display: none;">
+                        <div class="coming-soon">
+                            <h3>😴 失眠症专用表单</h3>
+                            <p>🚧 功能开发中，敬请期待...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI分析结果区域 -->
+                <div class="ai-analysis-section" id="analysisSection" style="display: none;">
+                    <div class="analysis-header">
+                        <h3>🤖 AI智能分析报告</h3>
+                        <div class="analysis-time">分析时间：<span id="analysisTime"></span></div>
+                    </div>
+
+                    <div class="analysis-content" id="analysisContent">
+                        <!-- 动态生成分析内容 -->
+                    </div>
+
+                    <div class="risk-assessment" id="riskAssessment" style="display: none;">
+                        <div class="risk-header">
+                            <h4>⚠️ 风险评估</h4>
+                        </div>
+                        <div class="risk-content" id="riskContent">
+                            <!-- 风险评估内容 -->
+                        </div>
+                        <div class="risk-actions">
+                            <button class="btn btn-danger" onclick="emergencyCall()">🚨 立即联系医生</button>
+                            <button class="btn btn-warning" onclick="bookAppointment()">📞 预约门诊</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 医生端视图 -->
+        <div class="doctor-view" id="doctorView" style="display: none;">
+            <div class="sidebar">
+                <div class="medical-card">
+                    <h3>📋 患者队列</h3>
+                    <div class="patient-queue">
+                        <div class="patient-item urgent">
+                            <div class="patient-header">
+                                <span class="patient-name">李**（67岁）</span>
+                                <span class="patient-status status-urgent">紧急</span>
+                            </div>
+                            <p style="font-size: 12px; color: #666; margin-bottom: 5px;">胸痛2小时，疑似心梗</p>
+                            <p style="font-size: 11px; color: #999;">更新时间：10:30</p>
+                        </div>
+
+                        <div class="patient-item">
+                            <div class="patient-header">
+                                <span class="patient-name">张**（34岁）</span>
+                                <span class="patient-status status-reviewing">分析中</span>
+                            </div>
+                            <p style="font-size: 12px; color: #666; margin-bottom: 5px;">发热3天，上呼吸道感染</p>
+                            <p style="font-size: 11px; color: #999;">更新时间：09:45</p>
+                        </div>
+
+                        <div class="patient-item">
+                            <div class="patient-header">
+                                <span class="patient-name">王**（28岁）</span>
+                                <span class="patient-status status-waiting">待诊</span>
+                            </div>
+                            <p style="font-size: 12px; color: #666; margin-bottom: 5px;">头痛1周，偏头痛复诊</p>
+                            <p style="font-size: 11px; color: #999;">更新时间：09:20</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="medical-card">
+                    <h3>⚠️ 危急值提醒</h3>
+                    <div style="background: #fff5f5; border: 1px solid #fecaca; border-radius: 6px; padding: 10px; margin-bottom: 10px;">
+                        <strong style="color: #dc3545;">高危患者</strong><br>
+                        <small>李**：肌钙蛋白升高</small>
+                    </div>
+                    <button class="btn btn-danger" style="width: 100%;">
+                        🚨 处理危急值
+                    </button>
+                </div>
+            </div>
+
+            <div class="content-area">
+                <div class="diagnostic-support">
+                    <h3>🔍 诊断辅助系统</h3>
+                    <p><strong>患者：</strong>张**，34岁，男性</p>
+                    <p><strong>主诉：</strong>反复发热3天，伴咳嗽、咽痛</p>
+
+                    <div class="diagnosis-grid">
+                        <div class="diagnosis-item">
+                            <strong>急性上呼吸道感染</strong>
+                            <div class="diagnosis-code">ICD-11: CA40.0</div>
+                            <small style="color: #28a745;">匹配度: 85%</small>
+                        </div>
+                        <div class="diagnosis-item">
+                            <strong>急性扁桃体炎</strong>
+                            <div class="diagnosis-code">ICD-11: CA41.1</div>
+                            <small style="color: #ffc107;">匹配度: 65%</small>
+                        </div>
+                    </div>
+
+                    <div class="prescription-panel">
+                        <h4>💊 处方开具</h4>
+                        <div class="medication-input">
+                            <input type="text" placeholder="药品名称" style="flex: 2;">
+                            <input type="text" placeholder="剂量" style="flex: 1;">
+                            <select style="flex: 1;">
+                                <option>bid</option>
+                                <option>tid</option>
+                                <option>qid</option>
+                                <option>prn</option>
+                            </select>
+                            <button class="btn btn-primary">添加</button>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <small style="color: #dc3545;">⚠️ 注意：患者青霉素过敏</small>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px; display: flex; gap: 10px;">
+                        <button class="btn btn-success">✅ 确认诊断</button>
+                        <button class="btn btn-warning" onclick="openPatientChat()">📞 患者沟通</button>
+                        <button class="btn btn-primary">📋 生成病历</button>
+                    </div>
+                </div>
+
+                <div class="ai-insight">
+                    <h4>🤖 AI辅助建议</h4>
+                    <p><strong>临床推理：</strong>基于症状、体征和实验室检查，支持急性上呼吸道感染诊断</p>
+                    <p><strong>治疗建议：</strong>抗生素治疗适当，建议加强对症支持治疗</p>
+                    <p><strong>随访计划：</strong>3天后复诊，评估疗效</p>
+                    <p><strong>注意事项：</strong>监测患者体温变化，如出现呼吸困难立即就诊</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 医患沟通面板 -->
+    <div class="communication-panel" id="commPanel" style="display: none;">
+        <div class="comm-header">
+            <span>💬 与张医生对话</span>
+            <button onclick="toggleComm()" style="background: none; border: none; color: white; cursor: pointer;">✕</button>
+        </div>
+        <div class="comm-body">
+            <div class="message received">
+                <strong>张医生：</strong>您好，根据您的症状描述，建议继续服药观察，如有加重及时联系。
+            </div>
+            <div class="message sent">
+                谢谢医生，我会按时服药的。现在感觉比昨天好一些了。
+            </div>
+        </div>
+        <div class="comm-input">
+            <input type="text" placeholder="输入消息..." id="messageInput">
+            <button class="btn btn-primary" onclick="sendMessage()">发送</button>
+        </div>
+    </div>
+</div>
+
+<!-- 页脚 -->
+<footer class="footer">
+    <div class="footer-content">
+        <p>&copy; 2025 智医伴侣 | AI健康管理专家</p>
+        <div class="footer-links">
+            <a href="#privacy">隐私政策</a>
+            <a href="#terms">使用条款</a>
+            <a href="#contact">联系我们</a>
+        </div>
+        <p class="disclaimer">
+            <small>⚠️ 重要提醒：本软件仅供健康管理参考，不能替代专业医疗诊断。任何严重或持续的症状都应及时就医。</small>
+        </p>
+    </div>
+</footer>
+
+<!-- 加载样式表和脚本 -->
+<link rel="stylesheet" href="assets/css/style.css">
+<script src="assets/js/app.js"></script>
+
+<!-- Service Worker注册 -->
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then((registration) => {
+                    console.log('SW registered: ', registration);
+                })
+                .catch((registrationError) => {
+                    console.log('SW registration failed: ', registrationError);
+                });
+        });
+    }
+</script>
 </body>
 </html>

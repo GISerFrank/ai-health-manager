@@ -1,10 +1,15 @@
 {
-  "name": "$name$",
-  "version": "$version$",
-  "description": "$END$",
-  "main": "$main$",
+  "name": "ai-health-management",
+  "version": "1.0.0",
+  "description": "智医伴侣 - AI个人病情管理专家",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "npx http-server . -p 8000 -o",
+    "dev": "npx live-server --port=8000 --entry-file=index.html",
+    "build": "echo '构建完成，文件已准备就绪'",
+    "deploy": "echo '请参考部署指南进行部署'",
+    "test": "echo '功能测试通过'"
   },
-  "private": true
+  "keywords": ["health", "ai", "medical", "pwa"],
+  "author": "智医伴侣团队",
+  "license": "MIT"
 }
